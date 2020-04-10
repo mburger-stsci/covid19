@@ -30,19 +30,19 @@ columns = ['Date', 'State', 'new_cases', 'total_cases', 'new_deaths',
 cases_state = pd.DataFrame(columns=columns)
 
 for state in states:
-    c_cum = 0
-    d_cum = 0
+    c_last = 0
+    d_last = 0
     for day_, day in zip(dates_, dates):
-        c_new = cases[(cases.State == state)][day_].sum()
-        c_cum += c_new
-        d_new = deaths[(deaths.State == state)][day_].sum()
-        d_cum += d_new
+        c_cum = cases[(cases.State == state)][day_].sum()
+        c_new, c_last = c_cum - c_last, c_cum
+        d_cum = deaths[(deaths.State == state)][day_].sum()
+        d_new, d_last = d_cum - d_last, d_cum
         cases_state = cases_state.append({'Date': day, 'State': state,
                                           'new_cases': c_new,
                                           'total_cases': c_cum,
                                           'new_deaths': d_new,
                                           'total_deaths': d_cum},
-        ignore_index=True)
+                                         ignore_index=True)
 
 cases_state['DateIso'] = cases_state.Date.apply(lambda x: x.isoformat())
 
@@ -175,3 +175,5 @@ fig5.legend.click_policy="hide"
 bkp.output_file('covid19_us.html')
 bkp.show(Column(fig0, fig1, fig2, fig3, fig4, fig5))
 
+# from IPython import embed
+# embed() # drop into an IPython session.
