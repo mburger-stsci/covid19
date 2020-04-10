@@ -15,10 +15,20 @@ curdoc().theme = Theme('/Users/mburger/.bokeh/bokeh.yml')
 def makedate(datestr):
     result = [int(x) for x in datestr.split('-')]
 
-    return date(*result)
+    return date(int(yr), months[mon], int(day.replace(',', '')))
 
 
-data = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/full_data.csv')
+cases = pd.read_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv')
+deaths = pd.read_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv')
+population = pd.read_csv('https://usafactsstatic.blob.core.windows.net/public/data/covid-19'
+                         '/covid_county_population_usafacts.csv')
+
+states = cases.State.unique()
+cases_state = pd.DataFrame(index=states)
+
+
+
+
 data['Date'] = data.date.apply(lambda x:
                             date(*[int(y) for y in x.split('-')]))
 
