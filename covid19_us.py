@@ -38,15 +38,24 @@ for state in states:
         d_cum = deaths[(deaths.State == state)][day_].sum()
         d_new, d_last = d_cum - d_last, d_cum
         cases_state = cases_state.append({'Date': day, 'State': state,
-                                          'new_cases': c_new,
-                                          'total_cases': c_cum,
-                                          'new_deaths': d_new,
-                                          'total_deaths': d_cum},
+                                          'new_cases': int(c_new),
+                                          'total_cases': int(c_cum),
+                                          'new_deaths': int(d_new),
+                                          'total_deaths': int(d_cum)},
                                          ignore_index=True)
+
+cases_state.new_cases.replace(0, 0.1, inplace=True)
+cases_state.new_deaths.replace(0, 0.1, inplace=True)
 
 cases_state['DateIso'] = cases_state.Date.apply(lambda x: x.isoformat())
 
-states_to_plot = ['MD', 'NY', 'FL', 'WA', 'TX', 'LA', 'CA']
+from IPython import embed
+embed() # drop into an IPython session.
+assert 0
+
+# plotdata = ColumnDataSource(cases_state)
+
+states_to_plot = ['MD', 'NY', 'FL', 'TX', 'WI', 'GA']
 tooltips = [('State', '@State'),
             ('Date', '@DateIso'),
             ('New Cases', '@new_cases'),
@@ -82,8 +91,11 @@ for state in states_to_plot:
     c = next(colors)
     fig1.circle('Date', 'new_cases', source=plotdata, color=c,
                 legend_label=state)
-    fig1.line('Date', 'new_cases', source=plotdata, color=c,
-                legend_label=state)
+    # fig1.line('Date', 'new_cases', source=plotdata, color=c,
+    #             legend_label=state)
+    c_mean = cases_state[cases_state.State == state].new_cases.rolling(5).mean().fillna(0)
+    fig1.line(x=cases_state[cases_state.State == state].Date,
+              y=c_mean, color=c, legend_label=state)
 
 fig2 = bkp.figure(plot_width=1200, plot_height=600,
                   title='New Cases vs. Total Cases',
@@ -99,8 +111,11 @@ for state in states_to_plot:
     c = next(colors)
     fig2.circle('total_cases', 'new_cases', source=plotdata, color=c,
                 legend_label=state)
-    fig2.line('total_cases', 'new_cases', source=plotdata, color=c,
-                legend_label=state)
+    # fig2.line('total_cases', 'new_cases', source=plotdata, color=c,
+    #             legend_label=state)
+    c_mean = cases_state[cases_state.State == state].new_cases.rolling(5).mean().fillna(0)
+    fig2.line(x=cases_state[cases_state.State == state].total_cases,
+              y=c_mean, color=c, legend_label=state)
 
 tooltips = [('Country', '@State'),
             ('Date', '@DateIso'),
@@ -138,8 +153,11 @@ for state in states_to_plot:
     c = next(colors)
     fig4.circle('Date', 'new_deaths', source=plotdata, color=c,
                 legend_label=state)
-    fig4.line('Date', 'new_deaths', source=plotdata, color=c,
-              legend_label=state)
+#    fig4.line('Date', 'new_deaths', source=plotdata, color=c,
+#              legend_label=state)
+    d_mean = cases_state[cases_state.State == state].new_deaths.rolling(5).mean().fillna(0)
+    fig4.line(x=cases_state[cases_state.State == state].Date,
+              y=d_mean, color=c, legend_label=state)
 
 fig5 = bkp.figure(plot_width=1200, plot_height=600,
                   title='New Deaths vs. Total Deaths',
@@ -155,8 +173,11 @@ for state in states_to_plot:
     c = next(colors)
     fig5.circle('total_deaths', 'new_deaths', source=plotdata, color=c,
                 legend_label=state)
-    fig5.line('total_deaths', 'new_deaths', source=plotdata, color=c,
-              legend_label=state)
+    # fig5.line('total_deaths', 'new_deaths', source=plotdata, color=c,
+    #           legend_label=state)
+    d_mean = cases_state[cases_state.State == state].new_deaths.rolling(5).mean().fillna(0)
+    fig5.line(x=cases_state[cases_state.State == state].total_deaths,
+              y=d_mean, color=c, legend_label=state)
 
 
 fig0.legend.location = "top_left"
@@ -175,5 +196,3 @@ fig5.legend.click_policy="hide"
 bkp.output_file('covid19_us.html')
 bkp.show(Column(fig0, fig1, fig2, fig3, fig4, fig5))
 
-# from IPython import embed
-# embed() # drop into an IPython session.

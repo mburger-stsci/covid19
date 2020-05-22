@@ -22,8 +22,7 @@ data = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/full_data.csv')
 data['Date'] = data.date.apply(lambda x:
                             date(*[int(y) for y in x.split('-')]))
 
-codes_to_plot = ['United States', 'South Korea', 'Italy',
-                 'United Kingdom', 'Japan', 'Spain']
+codes_to_plot = ['United States', 'Sweden', 'United Kingdom', 'Spain']
 tooltips = [('Country', '@location'),
             ('Date', '@date'),
             ('New Cases', '@new_cases'),
@@ -44,6 +43,7 @@ for code in codes_to_plot:
                legend_label=code)
     fig0.line('Date', 'total_cases', source=plotdata, color=c,
               legend_label=code)
+print('figure 0')
 
 fig1 = bkp.figure(plot_width=1200, plot_height=600,
                   title='New Cases',
@@ -58,8 +58,11 @@ for code in codes_to_plot:
     c = next(colors)
     fig1.circle('Date', 'new_cases', source=plotdata, color=c,
                 legend_label=code)
-    fig1.line('Date', 'new_cases', source=plotdata, color=c,
-                legend_label=code)
+    # fig1.line('Date', 'new_cases', source=plotdata, color=c,
+    #            legend_label=code)
+    c_mean = data[data.location == code].new_cases.rolling(5).mean().fillna(0)
+    fig1.line(x=data[data.location == code].Date, y=c_mean, color=c, legend_label=code)
+print('figure 1')
 
 fig2 = bkp.figure(plot_width=1200, plot_height=600,
                   title='New Cases vs. Total Cases',
@@ -74,8 +77,11 @@ for code in codes_to_plot:
     c = next(colors)
     fig2.circle('total_cases', 'new_cases', source=plotdata, color=c,
                 legend_label=code)
-    fig2.line('total_cases', 'new_cases', source=plotdata, color=c,
-                legend_label=code)
+    # fig2.line('total_cases', 'new_cases', source=plotdata, color=c,
+    #             legend_label=code)
+    c_mean = data[data.location == code].new_cases.rolling(5).mean().fillna(0)
+    fig2.line(x=data[data.location == code].total_cases, y=c_mean, color=c, legend_label=code)
+print('figure 2')
 
 tooltips = [('Country', '@location'),
             ('Date', '@date'),
@@ -95,8 +101,9 @@ for code in codes_to_plot:
     c = next(colors)
     fig3.circle('Date', 'total_deaths', source=plotdata, color=c,
                 legend_label=code)
-    fig3.line('Date', 'total_deaths', source=plotdata, color=c,
+    fig3.line('Date', 'total_deaths', color=c, source=plotdata, 
               legend_label=code)
+print('figure 3')
 
 fig4 = bkp.figure(plot_width=1200, plot_height=600,
                   title='New Deaths',
@@ -111,8 +118,11 @@ for code in codes_to_plot:
     c = next(colors)
     fig4.circle('Date', 'new_deaths', source=plotdata, color=c,
                 legend_label=code)
-    fig4.line('Date', 'new_deaths', source=plotdata, color=c,
-              legend_label=code)
+    #fig4.line('Date', 'new_deaths', source=plotdata, color=c,
+    #          legend_label=code)
+    c_mean = data[data.location == code].new_deaths.rolling(5).mean().fillna(0)
+    fig4.line(x=data[data.location == code].Date, y=c_mean, color=c, legend_label=code)
+print('figure 4')
 
 fig5 = bkp.figure(plot_width=1200, plot_height=600,
                   title='New Deaths vs. Total Deaths',
@@ -127,8 +137,11 @@ for code in codes_to_plot:
     c = next(colors)
     fig5.circle('total_deaths', 'new_deaths', source=plotdata, color=c,
                 legend_label=code)
-    fig5.line('total_deaths', 'new_deaths', source=plotdata, color=c,
-              legend_label=code)
+    #fig5.line('total_deaths', 'new_deaths', source=plotdata, color=c,
+    #          legend_label=code)
+    c_mean = data[data.location == code].new_deaths.rolling(5).mean().fillna(0)
+    fig5.line(x=data[data.location == code].total_deaths, y=c_mean, color=c, legend_label=code)
+print('figure 5')
 
 fig0.legend.location = "top_left"
 fig0.legend.click_policy="hide"
