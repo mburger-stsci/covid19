@@ -22,7 +22,7 @@ data = pd.read_csv('https://covid.ourworldindata.org/data/ecdc/full_data.csv')
 data['Date'] = data.date.apply(lambda x:
                             date(*[int(y) for y in x.split('-')]))
 
-codes_to_plot = ['United States', 'Sweden', 'United Kingdom', 'Spain']
+codes_to_plot = ['United States', 'Sweden', 'United Kingdom', 'Brazil', 'Russia']
 tooltips = [('Country', '@location'),
             ('Date', '@date'),
             ('New Cases', '@new_cases'),
@@ -101,7 +101,7 @@ for code in codes_to_plot:
     c = next(colors)
     fig3.circle('Date', 'total_deaths', source=plotdata, color=c,
                 legend_label=code)
-    fig3.line('Date', 'total_deaths', color=c, source=plotdata, 
+    fig3.line('Date', 'total_deaths', color=c, source=plotdata,
               legend_label=code)
 print('figure 3')
 
